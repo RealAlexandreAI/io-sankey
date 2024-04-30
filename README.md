@@ -169,6 +169,19 @@ To add the io-sankey to your Go project, use the following command:
 go get github.com/RealAlexandreAI/io-sankey
 ```
 
+```go
+
+// Map
+// @Description: Map a JSON Object to map[string]any through expressions.
+func (s *SankeyTransformer) Map(src any) (map[string]any, error) 
+
+// Transform
+//@Description: Transform a JSON Object to another one through expressions
+func (s *SankeyTransformer) Transform(src any, dst any) error
+
+```
+
+
 ### Env
 
 You can place any data into the runtime context in the form of WithEnvs(), but there are two reserved keywords, `$src` and `$dst`, whose contents as keys will be overridden by io-sankey.
@@ -196,11 +209,18 @@ refer [Expr Operator & Function](https://github.com/expr-lang/expr/blob/master/d
 - `jsonrepair(string) string`
 
 
+### Validation
+
+refer [validator v10](https://github.com/go-playground/validator)
+
+io-sankey `Transform` validate dst by validator tags automaticly.
+
+
 <!-- ROADMAP -->
 ## Roadmap
 
 - [x] Basic feature
-- [ ] Enhance Doc
+- [ ] Enhance Doc & test cases
 - [ ] More functions like sprig
 
 

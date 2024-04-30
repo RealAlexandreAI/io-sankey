@@ -2,23 +2,11 @@
 
 ## Unreleased
 
-## v0.0.6
 
-### Features
-- Enhance mermaid prompt
-
-## v0.0.5
+## v0.0.2
 
 ### Features
 - Enhance README
-- Add golangci-lint
-- MindMap support
-
-## v0.0.4
-
-### Features
-- Support Translation
-- Enhance CLI
 
 ## v0.0.1
 
