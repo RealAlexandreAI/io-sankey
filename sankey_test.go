@@ -1,11 +1,10 @@
 package iosankey
 
 import (
-	"fmt"
-	"github.com/expr-lang/expr"
-	"reflect"
 	"strconv"
 	"testing"
+
+	"github.com/expr-lang/expr"
 )
 
 type MixedDataTypes struct {
@@ -38,109 +37,60 @@ var mixedData = MixedDataTypes{
 	}{"Alice", 30},
 }
 
-func Test_TransformOrMap(t *testing.T) {
-
-	st := NewSankeyTransformer(
-		WithExpressions(
-			"reset()",
-			`set("name", "Tom")`,
-			`set("friend.last", "Anderson")`,
-			`drop("name")`,
-			`set("keyFromSrc", $src.StructValue)`,
-			`set("keyFromExternalEnv", $externalKey)`,
-			`set($externalKey, externalKey)`,
-			`set("KeyBuiltinFunc", uuidv4())`,
-			`set("KeyCustomFunc", myToInt(paramStringInt))`,
-		),
-		WithEnvs(map[string]interface{}{
-			"$externalKey":   "eValue1",
-			"externalKey":    "eValue2",
-			"paramStringInt": "123",
-		}),
-		WithExprOptions(
-			expr.Function(
-				"myToInt",
-				func(params ...any) (any, error) {
-					return strconv.Atoi(params[0].(string))
-				},
-				new(func(string) int),
-			),
-		),
-	)
-
-	m, err := st.Map(mixedData)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	fmt.Println(m)
-}
-
 func TestSankeyTransformer_Map(t *testing.T) {
 	type fields struct {
 		expressions []string
 		envs        map[string]any
 		exprOptions []expr.Option
 	}
-	type args struct {
-		src any
-	}
+
 	tests := []struct {
-		name    string
-		fields  fields
-		args    args
-		want    map[string]any
-		wantErr bool
+		fields fields
+		want   func(map[string]any) bool
 	}{
-		// TODO: Add test cases.
+		{
+			fields: fields{
+				expressions: []string{},
+				envs:        nil,
+				exprOptions: nil,
+			},
+			want: func(m map[string]any) bool {
+				return m["FloatValue"].(float64) == 42
+			},
+		},
+
+		{
+			fields: fields{
+				expressions: []string{
+					"reset()",
+				},
+				envs:        nil,
+				exprOptions: nil,
+			},
+			want: func(m map[string]any) bool {
+				return len(m) == 0
+			},
+		},
 	}
+
+	caseNo := 0
 	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
+		t.Run("CASE-"+strconv.Itoa(caseNo), func(t *testing.T) {
 			s := &SankeyTransformer{
 				expressions: tt.fields.expressions,
 				envs:        tt.fields.envs,
 				exprOptions: tt.fields.exprOptions,
 			}
-			got, err := s.Map(tt.args.src)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("Map() error = %v, wantErr %v", err, tt.wantErr)
+			got, err := s.Map(mixedData)
+			if err != nil {
+				t.Errorf("Map() error = %v", err)
 				return
 			}
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("Map() got = %v, want %v", got, tt.want)
+			if !tt.want(got) {
+				t.Errorf("Map() got = %v mismatch", got)
 			}
 		})
-	}
-}
 
-func TestSankeyTransformer_Transform(t *testing.T) {
-	type fields struct {
-		expressions []string
-		envs        map[string]any
-		exprOptions []expr.Option
-	}
-	type args struct {
-		src any
-		dst any
-	}
-	tests := []struct {
-		name    string
-		fields  fields
-		args    args
-		wantErr bool
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			s := &SankeyTransformer{
-				expressions: tt.fields.expressions,
-				envs:        tt.fields.envs,
-				exprOptions: tt.fields.exprOptions,
-			}
-			if err := s.Transform(tt.args.src, tt.args.dst); (err != nil) != tt.wantErr {
-				t.Errorf("Transform() error = %v, wantErr %v", err, tt.wantErr)
-			}
-		})
+		caseNo++
 	}
 }

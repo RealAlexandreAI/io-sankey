@@ -90,7 +90,7 @@ func WithEnvs(envs map[string]interface{}) SankeyOption {
 
 // Map
 //
-//	@Description:
+//	@Description: Map a JSON Object to map[string]any through expressions.
 //	@receiver s
 //	@param src
 //	@return map[string]any
@@ -108,7 +108,7 @@ func (s *SankeyTransformer) Map(src any) (map[string]any, error) {
 	}
 
 	mergedOptions := append(builtinOptions, s.exprOptions...)
-
+	// nolint
 	ctx := context.WithValue(context.TODO(), "dstCtxKey", atDstStr)
 
 	mergedEnvs := lo.Assign[string, any](
@@ -146,7 +146,7 @@ func (s *SankeyTransformer) Map(src any) (map[string]any, error) {
 		if runErr != nil {
 			return nil, fmt.Errorf("failed to run program with expression '%s': %w", expression, runErr)
 		}
-
+		// nolint
 		ctx = context.WithValue(ctx, "dstCtxKey", output)
 		mergedEnvs["$dst"] = ctx
 	}
@@ -162,7 +162,7 @@ func (s *SankeyTransformer) Map(src any) (map[string]any, error) {
 
 // Transform
 //
-//	@Description:
+//	@Description: Transform a JSON Object to another one through expressions
 //	@receiver s
 //	@param src
 //	@param dst
