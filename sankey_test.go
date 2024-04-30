@@ -55,7 +55,7 @@ func TestSankeyTransformer_Map(t *testing.T) {
 				exprOptions: nil,
 			},
 			want: func(m map[string]any) bool {
-				return m["FloatValue"].(float64) == 42
+				return m["FloatValue"].(float64) == 3.14 && m["StringValue"].(string) == "Hello, World!"
 			},
 		},
 
