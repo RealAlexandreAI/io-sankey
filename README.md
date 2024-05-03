@@ -52,8 +52,6 @@
 
 ### 🌟 Reasons to Choose io-sankey
 
-- 🌐 Introducing io-sankey: The Agile Data Transformer
-
 - 🧩 Modularity and Scalability: Designed with a modular approach and scalability in mind, io-sankey allows users to flexibly add or swap out data processing components to align with their workflow and project needs. It's an ideal tool for both novices and seasoned professionals looking to extend functionality for specific data transformation and validation requirements.
 
 - 🔌 Seamless Data Conversion: Easily integrate io-sankey into your data pipeline for on-the-fly conversion, supporting a variety of data formats to ensure smooth data flow through your system.
