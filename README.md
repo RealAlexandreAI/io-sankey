@@ -201,7 +201,7 @@ Compared to the `Set` method in sjson, the set method in io-sankey automatically
 
 refer [Expr Operator & Function](https://github.com/expr-lang/expr/blob/master/docs/language-definition.md)
 
-### io-sankey Inherited Function
+### io-sankey Intrinsic Function
 
 - `uuidv4() stirng`
 - `jsonrepair(string) string`
@@ -220,6 +220,7 @@ io-sankey `Transform` validate dst by validator tags automaticly.
 - [x] Basic feature
 - [ ] Enhance Doc & test cases
 - [ ] More functions like sprig
+- [ ] Guiding IO structuring, similar to Outlines from dottxt
 
 
 See the [open issues](https://github.com/RealAlexandreAI/io-sankey/issues) for a full list of proposed features (and known issues).
