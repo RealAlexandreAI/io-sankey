@@ -190,11 +190,13 @@ You can place any data into the runtime context in the form of WithEnvs(), but t
 
 The default behavior of io-sankey is that `$dst` inherits all properties of `$src`. If you wish to discard the automatically inherited content within an expression, then use `reset()`.
 
-#### set("key","value") & drop("key")
+#### set("key","value")
 
 refer [sjson Set](https://github.com/tidwall/sjson)
 
 Compared to the `Set` method in sjson, the set method in io-sankey automatically places `$dst` into the pending processing section.
+
+#### drop("key")
 
 
 ### Expr Function
@@ -221,7 +223,7 @@ io-sankey `Transform` validate dst by validator tags automaticly.
 - [ ] Enhance Doc & test cases
 - [ ] More functions like sprig
 - [ ] Guiding IO structuring, similar to Outlines from dottxt
-
+- [ ] Pure eval core function for void scene
 
 See the [open issues](https://github.com/RealAlexandreAI/io-sankey/issues) for a full list of proposed features (and known issues).
 
