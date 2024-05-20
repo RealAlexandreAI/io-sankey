@@ -66,7 +66,7 @@
 
  <img src="images/intro.png" alt="Logo" >
 
-The quintessential objective is to morph the $src entity into an alternate structure. transmute it into a distinct JSON Object (map[string]any).
+The quintessential objective is to morph the $src entity into an alternate structure. transmute it into a distinct JSON Object (map[string]any) in pipeline.
 
 Hence, the fundamental constituents can be distilled into the following:
 
