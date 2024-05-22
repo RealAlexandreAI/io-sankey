@@ -4,7 +4,7 @@ go 1.20
 
 require (
 	github.com/RealAlexandreAI/json-repair v0.0.7
-	github.com/bytedance/sonic v1.11.6
+	github.com/bytedance/sonic v1.11.7
 	github.com/expr-lang/expr v1.16.5
 	github.com/go-playground/validator/v10 v10.19.0
 	github.com/google/uuid v1.6.0
