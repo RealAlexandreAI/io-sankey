@@ -8,18 +8,16 @@ import (
 	"github.com/expr-lang/expr"
 	"github.com/expr-lang/expr/patcher"
 	"github.com/go-playground/validator/v10"
+	"github.com/jinzhu/copier"
 	"github.com/mitchellh/mapstructure"
 	"github.com/samber/lo"
-	"github.com/smallnest/deepcopy"
 	"github.com/tidwall/sjson"
 )
 
 var (
 	validate    *validator.Validate
-	optsInPlace = &sjson.Options{
-		Optimistic:     true,
-		ReplaceInPlace: true,
-	}
+	optsInPlace = &sjson.Options{Optimistic: true, ReplaceInPlace: true}
+	copyOption  = copier.Option{IgnoreEmpty: true, DeepCopy: true}
 )
 
 func init() {
@@ -101,7 +99,11 @@ func (s *SankeyTransformer) Map(src any) (map[string]any, error) {
 		return nil, fmt.Errorf("failed to decode source: %w", err)
 	}
 
-	atDst := deepcopy.Copy(atSrc)
+	atDst := make(map[string]any)
+	if err := copier.CopyWithOption(&atDst, &atSrc, copyOption); err != nil {
+		return nil, fmt.Errorf("failed to deepcopy dst map: %w", err)
+	}
+
 	atDstStr, err := sonic.MarshalString(atDst)
 	if err != nil {
 		return nil, fmt.Errorf("failed to marshal dst string: %w", err)

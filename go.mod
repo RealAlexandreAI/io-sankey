@@ -1,16 +1,16 @@
 module github.com/RealAlexandreAI/io-sankey
 
-go 1.20
+go 1.21
 
 require (
-	github.com/RealAlexandreAI/json-repair v0.0.7
+	github.com/RealAlexandreAI/json-repair v0.0.8
 	github.com/bytedance/sonic v1.11.7
 	github.com/expr-lang/expr v1.16.9
 	github.com/go-playground/validator/v10 v10.20.0
 	github.com/google/uuid v1.6.0
+	github.com/jinzhu/copier v0.4.0
 	github.com/mitchellh/mapstructure v1.5.0
 	github.com/samber/lo v1.39.0
-	github.com/smallnest/deepcopy v1.0.0
 	github.com/tidwall/sjson v1.2.5
 )
 
