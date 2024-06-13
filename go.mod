@@ -6,7 +6,7 @@ require (
 	github.com/RealAlexandreAI/json-repair v0.0.10
 	github.com/bytedance/sonic v1.11.8
 	github.com/expr-lang/expr v1.16.9
-	github.com/go-playground/validator/v10 v10.21.0
+	github.com/go-playground/validator/v10 v10.22.0
 	github.com/google/uuid v1.6.0
 	github.com/jinzhu/copier v0.4.0
 	github.com/mitchellh/mapstructure v1.5.0
