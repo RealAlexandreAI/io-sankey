@@ -1,5 +1,5 @@
-github.com/RealAlexandreAI/json-repair v0.0.9 h1:ZsY8tExc5OiCxZTjJLwiaNbaN2e3AwLjBedzZ8IZupM=
-github.com/RealAlexandreAI/json-repair v0.0.9/go.mod h1:GKJi5borR78O8c7HCVbgqjhoiVibZ6hJldxbc6dGrAI=
+github.com/RealAlexandreAI/json-repair v0.0.10 h1:j26kLTZ9PSGVdG8LFnoP9gpavoPOol4fl58c0cfYhrs=
+github.com/RealAlexandreAI/json-repair v0.0.10/go.mod h1:GKJi5borR78O8c7HCVbgqjhoiVibZ6hJldxbc6dGrAI=
 github.com/bytedance/sonic v1.11.8 h1:Zw/j1KfiS+OYTi9lyB3bb0CFxPJVkM17k1wyDG32LRA=
 github.com/bytedance/sonic v1.11.8/go.mod h1:LysEHSvpvDySVdC2f87zGWf6CIKJcAvqab1ZaiQtds4=
 github.com/bytedance/sonic/loader v0.1.1 h1:c+e5Pt1k/cy5wMveRDyk2X4B9hF4g7an8N3zCYjJFNM=
