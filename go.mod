@@ -3,7 +3,7 @@ module github.com/RealAlexandreAI/io-sankey
 go 1.21
 
 require (
-	github.com/RealAlexandreAI/json-repair v0.0.9
+	github.com/RealAlexandreAI/json-repair v0.0.10
 	github.com/bytedance/sonic v1.11.8
 	github.com/expr-lang/expr v1.16.9
 	github.com/go-playground/validator/v10 v10.21.0
