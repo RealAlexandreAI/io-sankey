@@ -10,7 +10,7 @@ require (
 	github.com/google/uuid v1.6.0
 	github.com/jinzhu/copier v0.4.0
 	github.com/mitchellh/mapstructure v1.5.0
-	github.com/samber/lo v1.45.0
+	github.com/samber/lo v1.46.0
 	github.com/tidwall/sjson v1.2.5
 )
 
