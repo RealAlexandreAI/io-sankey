@@ -3,7 +3,6 @@ package iosankey
 import (
 	"context"
 	"fmt"
-
 	"github.com/bytedance/sonic"
 	"github.com/expr-lang/expr"
 	"github.com/expr-lang/expr/patcher"
@@ -12,6 +11,7 @@ import (
 	"github.com/mitchellh/mapstructure"
 	"github.com/samber/lo"
 	"github.com/tidwall/sjson"
+	"strings"
 )
 
 var (
@@ -134,23 +134,39 @@ func (s *SankeyTransformer) Map(src any) (map[string]any, error) {
 		},
 	)
 
-	evalOptions := append(mergedOptions, expr.Env(mergedEnvs))
-	evalOptions = append(evalOptions, expr.Patch(patcher.WithContext{Name: "$dst"}))
+	origEvalOptions := append(mergedOptions, expr.Env(mergedEnvs))
+	shelfEvalOptions := append(origEvalOptions, expr.Patch(patcher.WithContext{Name: "$dst"}))
 
 	for _, expression := range s.expressions {
 
-		program, compileErr := expr.Compile(expression, evalOptions...)
-		if compileErr != nil {
-			return nil, fmt.Errorf("failed to compile expression '%s': %w", expression, compileErr)
-		}
+		if strings.HasPrefix(expression, "reset(") ||
+			strings.HasPrefix(expression, "set(") ||
+			strings.HasPrefix(expression, "drop(") {
 
-		output, runErr := expr.Run(program, mergedEnvs)
-		if runErr != nil {
-			return nil, fmt.Errorf("failed to run program with expression '%s': %w", expression, runErr)
+			program, compileErr := expr.Compile(expression, shelfEvalOptions...)
+			if compileErr != nil {
+				return nil, fmt.Errorf("failed to compile expression '%s': %w", expression, compileErr)
+			}
+
+			output, runErr := expr.Run(program, mergedEnvs)
+			if runErr != nil {
+				return nil, fmt.Errorf("failed to run program with expression '%s': %w", expression, runErr)
+			}
+			// nolint
+			ctx = context.WithValue(ctx, "dstCtxKey", output)
+			mergedEnvs["$dst"] = ctx
+		} else {
+
+			program, compileErr := expr.Compile(expression, origEvalOptions...)
+			if compileErr != nil {
+				return nil, fmt.Errorf("failed to compile expression '%s': %w", expression, compileErr)
+			}
+
+			_, runErr := expr.Run(program, mergedEnvs)
+			if runErr != nil {
+				return nil, fmt.Errorf("failed to run program with expression '%s': %w", expression, runErr)
+			}
 		}
-		// nolint
-		ctx = context.WithValue(ctx, "dstCtxKey", output)
-		mergedEnvs["$dst"] = ctx
 	}
 
 	ctx = mergedEnvs["$dst"].(context.Context)
