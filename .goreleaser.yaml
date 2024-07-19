@@ -16,6 +16,9 @@ before:
     # you may remove this if you don't need go generate
     - go generate ./...
 
+builds:
+  - skip: true
+
 checksum:
   name_template: 'checksums.txt'
 changelog:
