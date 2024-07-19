@@ -153,7 +153,7 @@ func Test_Readme(t *testing.T) {
 
 	_, err := st.Map(srcData)
 	if err != nil {
-		t.Errorf("error occur. %w", err)
+		t.Errorf("error occur. %v", err)
 	}
 
 }
