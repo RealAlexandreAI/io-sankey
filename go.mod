@@ -9,7 +9,7 @@ require (
 	github.com/expr-lang/expr v1.16.9
 	github.com/go-playground/validator/v10 v10.22.1
 	github.com/google/uuid v1.6.0
-	github.com/itchyny/gojq v0.12.16
+	github.com/itchyny/gojq v0.12.17
 	github.com/jinzhu/copier v0.4.0
 	github.com/mitchellh/mapstructure v1.5.0
 	github.com/samber/lo v1.47.0
