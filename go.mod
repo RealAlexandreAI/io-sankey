@@ -5,7 +5,7 @@ go 1.21
 require (
 	github.com/Masterminds/sprig/v3 v3.3.0
 	github.com/RealAlexandreAI/json-repair v0.0.14
-	github.com/bytedance/sonic v1.12.3
+	github.com/bytedance/sonic v1.12.6
 	github.com/expr-lang/expr v1.16.9
 	github.com/go-playground/validator/v10 v10.22.1
 	github.com/google/uuid v1.6.0
