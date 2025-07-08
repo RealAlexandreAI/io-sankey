@@ -12,7 +12,7 @@ require (
 	github.com/itchyny/gojq v0.12.17
 	github.com/jinzhu/copier v0.4.0
 	github.com/mitchellh/mapstructure v1.5.0
-	github.com/samber/lo v1.47.0
+	github.com/samber/lo v1.49.1
 	github.com/spyzhov/ajson v0.9.6
 	github.com/tidwall/sjson v1.2.5
 )
