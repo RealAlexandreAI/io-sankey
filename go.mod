@@ -5,8 +5,8 @@ go 1.21
 require (
 	github.com/Masterminds/sprig/v3 v3.3.0
 	github.com/RealAlexandreAI/json-repair v0.0.14
-	github.com/bytedance/sonic v1.13.1
-	github.com/expr-lang/expr v1.16.9
+	github.com/bytedance/sonic v1.12.6
+	github.com/expr-lang/expr v1.17.1
 	github.com/go-playground/validator/v10 v10.23.0
 	github.com/google/uuid v1.6.0
 	github.com/itchyny/gojq v0.12.17
@@ -39,8 +39,8 @@ require (
 	github.com/tidwall/pretty v1.2.0 // indirect
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
 	golang.org/x/arch v0.0.0-20210923205945-b76863e36670 // indirect
-	golang.org/x/crypto v0.26.0 // indirect
+	golang.org/x/crypto v0.31.0 // indirect
 	golang.org/x/net v0.23.0 // indirect
-	golang.org/x/sys v0.23.0 // indirect
-	golang.org/x/text v0.17.0 // indirect
+	golang.org/x/sys v0.28.0 // indirect
+	golang.org/x/text v0.21.0 // indirect
 )
