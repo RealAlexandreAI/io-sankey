@@ -1,13 +1,13 @@
 module github.com/RealAlexandreAI/io-sankey
 
-go 1.24.0
+go 1.25.0
 
 require (
 	github.com/Masterminds/sprig/v3 v3.3.0
 	github.com/RealAlexandreAI/json-repair v0.0.15
 	github.com/bytedance/sonic v1.15.0
 	github.com/expr-lang/expr v1.17.8
-	github.com/go-playground/validator/v10 v10.30.1
+	github.com/go-playground/validator/v10 v10.30.2
 	github.com/google/uuid v1.6.0
 	github.com/itchyny/gojq v0.12.18
 	github.com/jinzhu/copier v0.4.0
@@ -24,7 +24,7 @@ require (
 	github.com/bytedance/gopkg v0.1.3 // indirect
 	github.com/bytedance/sonic/loader v0.5.0 // indirect
 	github.com/cloudwego/base64x v0.1.6 // indirect
-	github.com/gabriel-vasile/mimetype v1.4.12 // indirect
+	github.com/gabriel-vasile/mimetype v1.4.13 // indirect
 	github.com/go-playground/locales v0.14.1 // indirect
 	github.com/go-playground/universal-translator v0.18.1 // indirect
 	github.com/huandu/xstrings v1.5.0 // indirect
@@ -40,7 +40,7 @@ require (
 	github.com/tidwall/pretty v1.2.1 // indirect
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
 	golang.org/x/arch v0.23.0 // indirect
-	golang.org/x/crypto v0.47.0 // indirect
-	golang.org/x/sys v0.40.0 // indirect
-	golang.org/x/text v0.33.0 // indirect
+	golang.org/x/crypto v0.49.0 // indirect
+	golang.org/x/sys v0.42.0 // indirect
+	golang.org/x/text v0.35.0 // indirect
 )
