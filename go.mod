@@ -4,7 +4,7 @@ go 1.25.0
 
 require (
 	github.com/Masterminds/sprig/v3 v3.3.0
-	github.com/RealAlexandreAI/json-repair v0.0.15
+	github.com/RealAlexandreAI/json-repair v0.0.17
 	github.com/bytedance/sonic v1.15.1
 	github.com/expr-lang/expr v1.17.8
 	github.com/go-playground/validator/v10 v10.30.3
