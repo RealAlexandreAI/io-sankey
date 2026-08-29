@@ -32,7 +32,7 @@ var mixedData = MixedDataTypes{
 	ArrayValue:  [3]int{1, 2, 3},
 	SliceValue:  make([]int, 0, 5),
 	MapValue:    map[string]int{"one": 1, "two": 2},
-	IntPtrValue: func() *int { var temp int = 100; return &temp }(),
+	IntPtrValue: func() *int { temp := 100; return &temp }(),
 	StructValue: struct {
 		Name string
 		Age  int
@@ -107,7 +107,7 @@ func Test_Readme(t *testing.T) {
 		ArrayValue:  [3]int{1, 2, 3},
 		SliceValue:  make([]int, 0, 5),
 		MapValue:    map[string]int{"one": 1, "two": 2},
-		IntPtrValue: func() *int { var temp int = 100; return &temp }(),
+		IntPtrValue: func() *int { temp := 100; return &temp }(),
 		StructValue: struct {
 			Name string
 			Age  int
