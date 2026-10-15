@@ -1,236 +1,101 @@
-<!-- Improved compatibility of back to top link: See: https://github.com/RealAlexandreAI/io-sankey/pull/73 -->
-<a name="readme-top"></a>
-<!--
-*** Thanks for checking out the Best-README-Template. If you have a suggestion
-*** that would make this better, please fork the repo and create a pull request
-*** or simply open an issue with the tag "enhancement".
-*** Don't forget to give the project a star!
-*** Thanks again! Now go create something AMAZING! :D
--->
+# io-sankey
 
+[![Go Reference](https://pkg.go.dev/badge/github.com/RealAlexandreAI/io-sankey.svg)](https://pkg.go.dev/github.com/RealAlexandreAI/io-sankey)
+[![CI](https://github.com/RealAlexandreAI/io-sankey/actions/workflows/ci.yaml/badge.svg)](https://github.com/RealAlexandreAI/io-sankey/actions/workflows/ci.yaml)
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://github.com/RealAlexandreAI/io-sankey/blob/main/LICENSE)
 
+Go library that maps one value onto another JSON object with [expr](https://github.com/expr-lang/expr) expressions, then optionally checks the result with [validator v10](https://github.com/go-playground/validator).
 
-<!-- PROJECT SHIELDS -->
-<!--
-*** I'm using markdown "reference style" links for readability.
-*** Reference links are enclosed in brackets [ ] instead of parentheses ( ).
-*** See the bottom of this document for the declaration of the reference variables
-*** for contributors-url, forks-url, etc. This is an optional, concise syntax you may use.
-*** https://www.markdownguide.org/basic-syntax/#reference-style-links
--->
-[![Contributors][contributors-shield]][contributors-url]
-[![Forks][forks-shield]][forks-url]
-[![Stargazers][stars-shield]][stars-url]
-[![Issues][issues-shield]][issues-url]
-[![GPL License][license-shield]][license-url]
+[**中文**](README.zh.md)
 
+## What it does
 
-<!-- PROJECT LOGO -->
-<br />
-<div align="center">
-  <a href="https://github.com/RealAlexandreAI/io-sankey">
-    <img src="images/logo.png" alt="Logo" width="80" height="80">
-  </a>
+`SankeyTransformer` copies `src` into a destination map, then runs a list of expressions against that copy. Expressions that start with `reset(`, `set(`, or `drop(` rewrite the destination JSON. Every other expression is evaluated for its side effects (a custom function, a log call) and does not replace the destination.
 
-<h3 align="center">io-sankey</h3>
+`$src` is the value you passed in. `$dst` is reserved: io-sankey binds a `context.Context` there and overwrites anything you put under that name in `WithEnvs`. The destination JSON string is the context value under `dstCtxKey`, not the `$dst` binding itself. Other env keys are available as variables inside expressions.
 
-  <p align="center">
-    Framework for IO mapping and validation across heterogeneous data.
-    <br />
-    <a href="https://goplay.tools/snippet/Xr04C_wjVeB">Online Playground</a>
-    ·
-    <a href="https://github.com/RealAlexandreAI/io-sankey/issues/new?labels=bug&template=bug-report---.md">Report Bug</a>
-    ·
-    <a href="https://github.com/RealAlexandreAI/io-sankey/issues/new?labels=enhancement&template=feature-request---.md">Request Feature</a>
-  </p>
-</div>
+![Pipeline: $src and Env feed reset, set, drop, expr functions, io-sankey functions, and user-defined functions, producing $dst with optional validation.](images/intro.png)
 
-
-<!-- ABOUT THE PROJECT -->
-
-## 🧶 Framework for IO mapping and validation across heterogeneous data.
-
-### 🌟 Reasons to Choose io-sankey
-
-- 🧩 Modularity and Scalability: Designed with a modular approach and scalability in mind, io-sankey allows users to flexibly add or swap out data processing components to align with their workflow and project needs. It's an ideal tool for both novices and seasoned professionals looking to extend functionality for specific data transformation and validation requirements.
-
-- 🔌 Seamless Data Conversion: Easily integrate io-sankey into your data pipeline for on-the-fly conversion, supporting a variety of data formats to ensure smooth data flow through your system.
-
-- 📏 Accurate Data Validation: With a focus on precision, io-sankey offers stringent data validation features to ensure that only the most accurate and reliable data is processed and passed along.
-
-- 📚 Extensive Function Library: Boasting an extensive library of functions derived from the expr library, io-sankey provides robust support for a wide array of data manipulation tasks. The library is complemented by built-in functions within io-sankey and the flexibility to pass custom user functions at runtime, catering to specific data processing needs.
-
-- 👶 User-Friendly for Beginners, Feature-Rich for Experts: io-sankey strikes a balance between ease of use and advanced capabilities. New users can quickly get started with its intuitive interface, while more experienced users can leverage its advanced features for complex data operations.
-
-### Intro
-
- <img src="images/intro.png" alt="Logo" >
-
-The quintessential objective is to morph the $src entity into an alternate structure. transmute it into a distinct JSON Object (map[string]any) in pipeline.
-
-Hence, the fundamental constituents can be distilled into the following:
-
-- Immutable Data
-    - User Input: Referring to $src
-    - Environment (Env): The dataset anticipated for runtime interrogation
-- Transformation Expression
-    - The core io-sankey functions
-        - reset()
-        - set("key", "value")
-        - drop("key")
-    - The `expr` builtin function & operators
-    - The io-sankey's intrinsic functions
-    - Custom user-defined functions: Injected at runtime
-- Verification
-
-<!-- USAGE EXAMPLES -->
-
-## Usage
-
-### Example
-
-```go
-var srcData = MixedDataTypes{
-    IntValue:    42,
-    FloatValue:  3.14,
-    StringValue: "Hello, World!",
-    BoolValue:   true,
-    ArrayValue:  [3]int{1, 2, 3},
-    SliceValue:  make([]int, 0, 5),
-    MapValue:    map[string]int{"one": 1, "two": 2},
-    IntPtrValue: func() *int { var temp int = 100; return &temp }(),
-    StructValue: struct {
-        Name string
-        Age  int
-    }{"Alice", 30},
-}
-
+```mermaid
+flowchart LR
+  src["$src"] --> copy["copy into $dst"]
+  env["WithEnvs"] --> expr["expr"]
+  copy --> expr
+  expr --> rewrite["reset / set / drop"]
+  expr --> side["other expressions"]
+  rewrite --> dst["map or struct"]
+  side --> dst
+  dst --> check["validator, Transform only"]
 ```
 
-```go
-st := NewSankeyTransformer(
-    WithExpressions(
-        "reset()",
-        `set("name", "Tom")`,
-        `set("friend.last", "Anderson")`,
-        `drop("name")`,
-        `set("keyFromSrc", $src.StructValue)`,
-        `set("keyFromExternalEnv", $externalKey)`,
-        `set($externalKey, externalKey)`,
-        `myAccessLog()`,
-        `set("KeyBuiltinFunc", uuidv4())`,
-        `set("KeyCustomFunc", myToInt(paramStringInt))`,
-    ),
-    WithEnvs(map[string]any{
-        "$externalKey":   "eValue1",
-        "externalKey":    "eValue2",
-        "paramStringInt": "123",
-    }),
-    WithExprOptions(
-        expr.Function(
-            "myToInt",
-            func(params ...any) (any, error) {
-                return strconv.Atoi(params[0].(string))
-            },
-            new(func(string) int),
-        ),
-        expr.Function(
-            "myAccessLog",
-            func(params ...any) (any, error) {
-                fmt.Println("access at: " + time.Now().String())
-                return nil, nil
-            },
-            new(func() any),
-        ),
-    ),
-)
+`Map` returns `map[string]any`. `Transform` decodes that map into `dst` and then calls `validator.Struct`. `Map` does not validate.
 
-st.Map(srcData)
+## Install
 
-```
-
-### Explanation
-
-| **Action**                                      | **Related Resource**                                   | **Interim Results (dst)**                                                                                                                                                                              |
-|-------------------------------------------------|--------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `.Map` Or `.Transform`                          | $src, copy $src to dst by default.                     | $src == mixedData == dst                                                                                                                                                                               |   
-| `reset()`                                       | Discard attributes inherited from $src.                | { }                                                                                                                                                                                                    |   
-| `set("name", "Tom")`                            | use `sjson` grammer to set                             | `{"name":"Tom"}`                                                                                                                                                                                       |   
-| `set("friend.last", "Anderson")`                | use `sjson` grammer to set deeper field                | `{"name":"Tom","friend":{"last":"Anderson"}}`                                                                                                                                                          |   
-| `drop("name")`                                  | use `sjson` grammer to delete                          | `{"friend":{"last":"Anderson"}}`                                                                                                                                                                       |   
-| `set("keyFromSrc", $src.StructValue)`           | user input $src as a datasource to fill value          | `{"friend":{"last":"Anderson"},"keyFromSrc":{"Name":"Alice","Age":30}}`                                                                                                                                |   
-| `set("keyFromExternalEnv", $externalKey)`       | user input Env as a datasource to fill value           | `{"friend":{"last":"Anderson"},"keyFromSrc":{"Name":"Alice","Age":30},"keyFromExternalEnv":"eValue1"}`                                                                                                 |   
-| `set($externalKey, externalKey)`                | expression as key and value                            | `{"friend":{"last":"Anderson"},"keyFromSrc":{"Name":"Alice","Age":30},"keyFromExternalEnv":"eValue1","eValue1":"eValue2"}`                                                                             |   
-| `myAccessLog()`                                 | custom funtion who don't return value                  | print "access at time.now()"                                                                                                                                                                           |
-| `set("KeyBuiltinFunc", uuidv4())`               | use io-sankey Function (expr Function same way )       | `{"friend":{"last":"Anderson"},"keyFromSrc":{"Name":"Alice","Age":30},"keyFromExternalEnv":"eValue1","eValue1":"eValue2","KeyBuiltinFunc":"41b078ce-b81f-4972-ae80-5a0d385247fa"}`                     |   
-| `set("KeyCustomFunc", myToInt(paramStringInt))` | use user defined Function                              | `{"friend":{"last":"Anderson"},"keyFromSrc":{"Name":"Alice","Age":30},"keyFromExternalEnv":"eValue1","eValue1":"eValue2","KeyBuiltinFunc":"41b078ce-b81f-4972-ae80-5a0d385247fa","KeyCustomFunc":123}` | 
-| `.Map` Or `.Transform`                          | Map() finish here. Transform() validate & deserialize. |                                                                                                                                                                                                        | 
-
-<!-- GETTING STARTED -->
-
-## 🏁 Getting Started
-
-To add the io-sankey to your Go project, use the following command:
+Go 1.25 or later (`go 1.25.0` in `go.mod`).
 
 ```shell
 go get github.com/RealAlexandreAI/io-sankey
 ```
 
+Latest tag is [v0.0.4](https://github.com/RealAlexandreAI/io-sankey/releases/tag/v0.0.4). CI on `main` runs `go test -count=1 -race ./...` with Go 1.25.
+
+## API
+
 ```go
+func NewSankeyTransformer(opts ...SankeyOption) *SankeyTransformer
 
-// Map
-// @Description: Map a JSON Object to map[string]any through expressions.
+func WithExpressions(expressions ...string) SankeyOption
+func WithEnvs(envs map[string]interface{}) SankeyOption
+func WithExprOptions(exprOptions ...expr.Option) SankeyOption
+
 func (s *SankeyTransformer) Map(src any) (map[string]any, error)
-
-// Transform
-//@Description: Transform a JSON Object to another one through expressions
 func (s *SankeyTransformer) Transform(src any, dst any) error
-
 ```
 
-### Env
+| Option | Effect |
+| --- | --- |
+| `WithExpressions` | Appends expressions. They run in order. |
+| `WithEnvs` | Copies keys into the expr environment. `$src` and `$dst` are overwritten on each `Map` call. `$dst` is the context, not the JSON string. |
+| `WithExprOptions` | Extra [expr options](https://github.com/expr-lang/expr), including `expr.Function` for custom functions. Appended after the builtins. |
 
-You can place any data into the runtime context in the form of WithEnvs(), but there are two reserved keywords, `$src` and `$dst`, whose contents as keys will be overridden by io-sankey.
+Builtins are compiled with `expr.AllowUndefinedVariables()` and `expr.Optimize(true)`. `reset`, `set`, and `drop` also receive a context patch so the first argument is the current `$dst` context.
 
-### Core Function
+`Map` decodes `src` with [mapstructure](https://github.com/mitchellh/mapstructure), deep-copies it with [copier](https://github.com/jinzhu/copier) (`IgnoreEmpty`, `DeepCopy`), and marshals the copy with [sonic](https://github.com/bytedance/sonic). `set` and `drop` then edit that JSON string.
 
-#### reset()
+## Expressions
 
-The default behavior of io-sankey is that `$dst` inherits all properties of `$src`. If you wish to discard the automatically inherited content within an expression, then use `reset()`.
+Only expressions whose text starts with `reset(`, `set(`, or `drop(` update `$dst`. A call nested inside another expression does not.
 
-#### set("key","value")
+### reset()
 
-refer [sjson Set](https://github.com/tidwall/sjson)
+Replaces `$dst` with `{}`. Without `reset()`, `$dst` starts as a copy of `$src`.
 
-Compared to the `Set` method in sjson, the set method in io-sankey automatically places `$dst` into the pending processing section.
+### set(key, value)
 
-#### drop("key")
+Writes `value` at `key` with [sjson `SetOptions`](https://github.com/tidwall/sjson) (`Optimistic`, `ReplaceInPlace`). `key` is an sjson path, so `set("friend.last", "Anderson")` creates `friend.last`. The current `$dst` JSON is the document; you do not pass it yourself.
 
-refer [sjson Set](https://github.com/tidwall/sjson)
+`set` ignores the error from sjson and keeps the previous JSON string when the path is rejected.
 
-Compared to the `Delete` method in sjson, the set method in io-sankey automatically places `$dst` into the pending processing section.
+### drop(key)
 
-### Expr Function
+Deletes `key` with [sjson `Delete`](https://github.com/tidwall/sjson). Same as `set`: the document is the current `$dst`, and a delete error is ignored.
 
-refer [Expr Operator & Function](https://github.com/expr-lang/expr/blob/master/docs/language-definition.md)
+## Builtins
 
-### Sprig Function
+These are expr functions, registered on every transformer. [expr operators and builtins](https://expr-lang.org/docs/language-definition) are available as well.
 
-`sprig(string, any) string`
+| Name | Signature | Returns |
+| --- | --- | --- |
+| `uuidv4` | `uuidv4() string` | `uuid.NewString()` from [google/uuid](https://github.com/google/uuid). |
+| `jsonrepair` | `jsonrepair(string) string` | Repaired JSON from [json-repair](https://github.com/RealAlexandreAI/json-repair). First argument must be a string. |
+| `sprig` | `sprig(string, any) string` | Renders the first argument as a Go `text/template` with the [Sprig](https://masterminds.github.io/sprig/) `TxtFuncMap`. The second argument is the template data. |
+| `jsonpath` | `jsonpath(string, string) []string` | [ajson](https://github.com/spyzhov/ajson) JSONPath over the first argument (a JSON string). Each match is `node.String()`. |
+| `jq` | `jq(any, string) []any` | [gojq](https://github.com/itchyny/gojq) query (second argument) over the first. The first argument must be `map[string]any`, `[]any`, or `[]map[string]any`. Anything else returns an error. |
 
-refer [Sprig Function](https://masterminds.github.io/sprig/)
+## Custom functions
 
-### io-sankey Intrinsic Function
-
-- `uuidv4() stirng`
-- `jsonrepair(string) string`
-- `sprig(string, any) string`
-- `jsonpath(string, string) []stirng`
-- `jq(any, string) []any`
-
-### Custom Function
-
-Register custom functions with  `WithExprOptions`. And usage just like `myAccessLog()`.
+Pass `expr.Function` through `WithExprOptions`. The function is then a normal expr call.
 
 ```go
 st := NewSankeyTransformer(
@@ -259,80 +124,87 @@ st := NewSankeyTransformer(
 )
 ```
 
+## Validation
 
-### Validation
+`Transform` runs `validator.New(validator.WithRequiredStructEnabled())` on `dst` after decoding. Struct tags from [validator v10](https://github.com/go-playground/validator) apply. A validation error is returned as `error validating destination structure`. `Map` skips this step.
 
-refer [validator v10](https://github.com/go-playground/validator)
+## Example
 
-io-sankey `Transform` validate dst by validator tags automaticly.
+Same sequence as `Test_Readme` in `sankey_test.go`.
 
+```go
+var srcData = MixedDataTypes{
+	IntValue:    42,
+	FloatValue:  3.14,
+	StringValue: "Hello, World!",
+	BoolValue:   true,
+	ArrayValue:  [3]int{1, 2, 3},
+	SliceValue:  make([]int, 0, 5),
+	MapValue:    map[string]int{"one": 1, "two": 2},
+	IntPtrValue: func() *int { temp := 100; return &temp }(),
+	StructValue: struct {
+		Name string
+		Age  int
+	}{"Alice", 30},
+}
 
-<!-- ROADMAP -->
+st := NewSankeyTransformer(
+	WithExpressions(
+		"reset()",
+		`set("name", "Tom")`,
+		`set("friend.last", "Anderson")`,
+		`drop("name")`,
+		`set("keyFromSrc", $src.StructValue)`,
+		`set("keyFromExternalEnv", $externalKey)`,
+		`set($externalKey, externalKey)`,
+		`myAccessLog()`,
+		`set("KeyBuiltinFunc", uuidv4())`,
+		`set("KeyCustomFunc", myToInt(paramStringInt))`,
+	),
+	WithEnvs(map[string]any{
+		"$externalKey":   "eValue1",
+		"externalKey":    "eValue2",
+		"paramStringInt": "123",
+	}),
+	WithExprOptions(
+		expr.Function(
+			"myToInt",
+			func(params ...any) (any, error) {
+				return strconv.Atoi(params[0].(string))
+			},
+			new(func(string) int),
+		),
+		expr.Function(
+			"myAccessLog",
+			func(params ...any) (any, error) {
+				fmt.Println("access at: " + time.Now().String())
+				return nil, nil
+			},
+			new(func() any),
+		),
+	),
+)
 
-## Roadmap
+dst, err := st.Map(srcData)
+```
 
-- [x] Basic feature
-- [x] Enhance Doc & test cases
-- [x] More functions like sprig
-- [ ] Guiding IO structuring, similar to Outlines from dottxt
-- [x] Pure eval core function for void scene
+| Step | What it reads | `$dst` after the step |
+| --- | --- | --- |
+| `Map` / `Transform` start | `$src`, copied into `$dst` | same fields as `srcData` |
+| `reset()` | — | `{}` |
+| `set("name", "Tom")` | literal | `{"name":"Tom"}` |
+| `set("friend.last", "Anderson")` | sjson path | `{"name":"Tom","friend":{"last":"Anderson"}}` |
+| `drop("name")` | sjson path | `{"friend":{"last":"Anderson"}}` |
+| `set("keyFromSrc", $src.StructValue)` | `$src` | adds `keyFromSrc` = `{"Name":"Alice","Age":30}` |
+| `set("keyFromExternalEnv", $externalKey)` | env `$externalKey` | adds `keyFromExternalEnv` = `"eValue1"` |
+| `set($externalKey, externalKey)` | env key and env value | adds `"eValue1":"eValue2"` |
+| `myAccessLog()` | custom function, no return used | prints `access at: ` plus `time.Now()`; `$dst` unchanged |
+| `set("KeyBuiltinFunc", uuidv4())` | builtin | adds a new UUID string |
+| `set("KeyCustomFunc", myToInt(paramStringInt))` | custom function | adds `KeyCustomFunc` = `123` |
+| return | — | `Map` returns the map. `Transform` decodes it into `dst` and validates. |
 
-See the [open issues](https://github.com/RealAlexandreAI/io-sankey/issues) for a full list of proposed features (and
-known issues).
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-
-<!-- CONTRIBUTING -->
-
-## Contributing
-
-Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
-
-If you have a suggestion that would make this better, please fork the repo and create a pull request. You can also simply open an issue with the tag "enhancement".
-Don't forget to give the project a star! Thanks again!
-
-1. Fork the Project
-2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the Branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-<!-- LICENSE -->
+The UUID above is a new value on every run. The test does not pin it.
 
 ## License
 
-Distributed under the GPLv3 License. See `LICENSE` for more information.
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-
-
-<!-- CONTACT -->
-
-## Contact
-
-RealAlexandreAI - [@RealAlexandreAI](https://twitter.com/RealAlexandreAI)
-
-Project Link: [https://github.com/RealAlexandreAI/io-sankey](https://github.com/RealAlexandreAI/io-sankey)
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-
-<!-- MARKDOWN LINKS & IMAGES -->
-<!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
-[contributors-shield]: https://img.shields.io/github/contributors/RealAlexandreAI/io-sankey.svg?style=for-the-badge
-[contributors-url]: https://github.com/RealAlexandreAI/io-sankey/graphs/contributors
-[forks-shield]: https://img.shields.io/github/forks/RealAlexandreAI/io-sankey.svg?style=for-the-badge
-[forks-url]: https://github.com/RealAlexandreAI/io-sankey/network/members
-[stars-shield]: https://img.shields.io/github/stars/RealAlexandreAI/io-sankey.svg?style=for-the-badge
-[stars-url]: https://github.com/RealAlexandreAI/io-sankey/stargazers
-[issues-shield]: https://img.shields.io/github/issues/RealAlexandreAI/io-sankey.svg?style=for-the-badge
-[issues-url]: https://github.com/RealAlexandreAI/io-sankey/issues
-[license-shield]: https://img.shields.io/github/license/RealAlexandreAI/io-sankey.svg?style=for-the-badge
-[license-url]: https://github.com/RealAlexandreAI/io-sankey/blob/master/LICENSE
-[product-screenshot]: images/screenshot.png
-
-
+[GNU General Public License v3](LICENSE). See `LICENSE`.
