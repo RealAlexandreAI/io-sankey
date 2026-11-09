@@ -7,14 +7,14 @@ require (
 	github.com/RealAlexandreAI/json-repair v0.0.19
 	github.com/bytedance/sonic v1.15.5
 	github.com/expr-lang/expr v1.17.8
-	github.com/go-playground/validator/v10 v10.30.5
+	github.com/go-playground/validator/v10 v10.30.6
 	github.com/google/uuid v1.6.0
-	github.com/itchyny/gojq v0.12.19
+	github.com/itchyny/gojq v0.12.20
 	github.com/jinzhu/copier v0.4.0
 	github.com/mitchellh/mapstructure v1.5.0
 	github.com/samber/lo v1.53.0
 	github.com/spyzhov/ajson v0.9.6
-	github.com/tidwall/sjson v1.2.5
+	github.com/tidwall/sjson v1.2.6
 )
 
 require (
