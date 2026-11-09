@@ -9,6 +9,9 @@ on:
   pull_request:
     types: [opened, synchronize, reopened]
     paths-ignore: *docs
+  # Dependabot auto-merge squashes with GITHUB_TOKEN and does not retrigger
+  # push workflows; keep a manual/dispatch path for tip CI sweeps.
+  workflow_dispatch:
 
 permissions:
   contents: read
